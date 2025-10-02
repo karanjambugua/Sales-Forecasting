@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement - Thrift Sales Forecast</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-4" id="sidebar">
+            <h3>Thrift Forecast</h3>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/store-manager">Store Manager</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/procurement">Procurement</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/executive">Executive</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content Wrapper -->
+        <div id="page-content-wrapper" class="container-fluid">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">Procurement Dashboard</a>
+            </nav>
+
+            <!-- Procurement Dashboard Content -->
+            <div class="row mt-4">
+                <!-- Left Column: Product Demand Forecast Chart -->
+                <div class="col-md-8">
+                    <h4>Product Demand Forecast</h4>
+                    <canvas id="procurementChart"></canvas>
+                </div>
+
+                <!-- Right Column: Replenishment Suggestions -->
+                <div class="col-md-4">
+                    <h4>Replenishment Suggestions</h4>
+                    <ul id="replenishmentList">
+                        <!-- Suggestions will be populated dynamically here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        // Fetch procurement data from the Flask backend
+        fetch('/get-procurement-data')
+            .then(response => response.json())
+            .then(data => {
+                // Populate the product demand forecast chart
+                const ctx = document.getElementById('procurementChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.categories,
+                        datasets: [{
+                            label: 'Stock vs Demand',
+                            data: data.stockAndDemand,
+                            backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)'],
+                            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)', 'rgba(75, 192, 192, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Populate the replenishment suggestions list
+                let replenishment = '';
+                data.replenishmentSuggestions.forEach(item => {
+                    replenishment += `<li>${item}</li>`;
+                });
+                document.getElementById('replenishmentList').innerHTML = replenishment;
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                // Display error message if data fetching fails
+                document.getElementById('replenishmentList').innerHTML = '<li>Error loading replenishment suggestions</li>';
+                document.getElementById('procurementChart').innerHTML = '<p>Error loading chart data</p>';
+            });
+    </script>
+</body>
+</html>
