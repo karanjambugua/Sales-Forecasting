@@ -124,3 +124,4 @@ Werkzeug==2.2.0
 wheel==0.45.1
 widgetsnbextension==4.0.14
 xgboost==3.0.4
+statsmodels==0.14.5  
