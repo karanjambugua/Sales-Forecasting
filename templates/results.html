@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forecast Results</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='results.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Result Card -->
+                <div class="card p-4">
+                    <h3 class="card-title text-center mb-4">Forecast Results</h3>
+                    
+                    {% if error %}
+                    <!-- Display error message if something goes wrong -->
+                    <div class="alert alert-warning" role="alert">
+                        <strong>Error:</strong> {{ error }}
+                    </div>
+                    {% else %}
+                    <!-- Display forecast and recommendations -->
+                    <div class="alert alert-success" role="alert">
+                        <strong>Prediction:</strong> 
+                        {% if result %}
+                            {{ result.forecast }}
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Recommendations:</strong>
+                        <ul>
+                            {% if result %}
+                                {% for recommendation in result.recommendations %}
+                                    <li>{{ recommendation }}</li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Return Button -->
+                    <a href="/user" class="btn btn-primary btn-block">Return to Forecast Selection</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

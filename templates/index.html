@@ -15,6 +15,7 @@
             <h3>Thrift Forecast</h3>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
+                 <li class="nav-item"><a class="nav-link text-white" href="/user">Get Prediction</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/store-manager">Store Manager</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/procurement">Procurement</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/executive">Executive</a></li>
@@ -80,39 +81,7 @@
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
-        fetch('/get-sales-forecast')
-            .then(response => response.json())
-            .then(data => {
-                // Update the metrics dynamically
-                document.getElementById('industrySales').innerText = data.industrySales;
-                document.getElementById('forecastAccuracy').innerText = data.forecastAccuracy;
-                document.getElementById('activeAlerts').innerText = data.activeAlerts;
-                document.getElementById('inventoryTurnover').innerText = data.inventoryTurnover;
-
-                // Populate the Recommendations List
-                let recommendations = '';
-                data.recommendations.forEach(rec => {
-                    recommendations += `<li>${rec}</li>`;
-                });
-                document.getElementById('recommendationsList').innerHTML = recommendations;
-
-                // Sales Forecast Chart
-                const ctx = document.getElementById('salesForecastChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: data.months,
-                        datasets: [{
-                            label: 'Forecasted Sales',
-                            data: data.sales,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            fill: false,
-                            tension: 0.1
-                        }]
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching forecast data:', error));
+        
     </script>
 </body>
 </html>
