@@ -514,5 +514,7 @@ def results():
     return render_template('results.html', forecast=forecast, error=error, product=product, quantity=quantity,
                            start_date=start_date, end_date=end_date, shop=shop, shop_sales=shop_sales,
                            day_of_week=day_of_week, include_weekend=include_weekend)
+    
+    
 if __name__ == '__main__':
     app.run(debug=True)
