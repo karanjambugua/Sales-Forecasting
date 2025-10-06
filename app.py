@@ -7,7 +7,9 @@ from statsmodels.tsa.arima.model import ARIMA
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+import os
 
+print(f"Static folder path: {os.path.join(os.getcwd(), 'static')}")
 # In app.py, configure the static folder explicitly
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 
