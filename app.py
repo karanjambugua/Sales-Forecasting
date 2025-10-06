@@ -9,7 +9,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
 # In app.py, configure the static folder explicitly
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+
 # Load the sales data
 data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
 
