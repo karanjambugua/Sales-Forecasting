@@ -186,3 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
         dayweekBtn.addEventListener('click', function () { showForm('dayweek'); });
     }
 });
+// JavaScript to toggle the sidebar visibility
+document.getElementById('hamburger').addEventListener('click', function() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('active');  // Toggle the 'active' class
+});

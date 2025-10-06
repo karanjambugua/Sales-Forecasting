@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procurement - Thrift Sales Forecast</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{{ url_for('static', filename='procurement.css') }}" rel="stylesheet">
+</head>
+<body>  
+     <div class="hamburger" id="hamburger">☰</div>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-4" id="sidebar">
+            <h3>Thrift Forecast</h3>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/user">Get Prediction</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/store-manager">Store Manager</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/procurement">Procurement</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/executive">Executive</a></li>
+            </ul>
+        </div>
+
+        <!-- Page Content Wrapper -->
+        <div id="page-content-wrapper" class="container-fluid">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">Procurement Dashboard</a>
+            </nav>
+
+            <!-- Procurement Dashboard Content -->
+            <div class="row mt-4">
+                <!-- Left Column: Product Demand Forecast Chart -->
+                <div class="col-md-8">
+                    <h4>Product Demand Forecast</h4>
+                    <canvas id="procurementChart"></canvas>
+                </div>
+
+                <!-- Right Column: Replenishment Suggestions -->
+                <div class="col-md-4">
+                    <h4>Replenishment Suggestions</h4>
+                    <div id="replenishmentList" class="recommendations-grid">
+                        <!-- Suggestions will be populated dynamically here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performing Products Section -->
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <h4>Top Performing Products</h4>
+                    <ul id="topPerformingProducts">
+                        <!-- Dynamic Content -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Underperforming Products Section -->
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <h4>Underperforming Products</h4>
+                    <ul id="underperformingProducts">
+                        <!-- Dynamic Content -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Supplier Performance Section -->
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <h4>Supplier Performance</h4>
+                    <div id="supplierPerformance">
+                        <!-- Supplier performance data -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <h4>Procurement Alerts</h4>
+                    <ul id="procurementAlerts">
+                        <!-- Procurement Alerts -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="{{ url_for('static', filename='procurement.js') }}"></script>
+</body>
+</html>

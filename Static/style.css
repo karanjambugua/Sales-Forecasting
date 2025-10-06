@@ -270,3 +270,78 @@ ul#recommendationsList li:hover {
         height: auto !important;
     }
 }
+/* Content Wrapper to align beside the sidebar */
+#page-content-wrapper {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+}
+
+/* Chart Size */
+#salesForecastChart {
+    width: 100% !important;
+    height: 300px !important;  /* Set a fixed height for the chart */
+}
+
+/* Cards Margin and Padding */
+.col-md-8, .col-md-4 {
+    padding-right: 50px;
+}
+
+.row.mt-4 {
+    margin-top: 20px;
+}
+
+/* Prevent overlap and ensure content fits well */
+
+
+/* Adjust for small screens */
+@media screen and (max-width: 768px) {
+    #sidebar {
+        width: 200px;
+    }
+    #page-content-wrapper {
+        margin-left: 200px;
+    }
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none; /* Hide it on large screens */
+    font-size: 30px;
+    cursor: pointer;
+    padding: 10px;
+}
+/* Responsive Layout for Small Screens */
+@media (max-width: 767px) {
+    /* Show the hamburger menu on small screens */
+    .hamburger {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000; /* Ensure it's above the sidebar */
+    }
+
+    /* Adjust sidebar and content layout on small screens */
+    #sidebar {
+        width: 200px;
+        transform: translateX(-250px);  /* Start off-screen */
+    }
+
+    #sidebar.active {
+        transform: translateX(0);  /* Slide in when 'active' class is added */
+    }
+
+    #page-content-wrapper {
+        margin-left: 0; /* Take full width on small screens */
+    }
+
+    .col-md-8 {
+        width: 100%;  /* Full width on small screens */
+    }
+
+    .col-md-4 {
+        width: 100%;  /* Full width on small screens */
+    }
+}

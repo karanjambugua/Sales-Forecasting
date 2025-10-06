@@ -50,3 +50,43 @@ ul li {
 .btn-block:hover {
     background-color: #2980b9;
 }
+/* Hamburger Menu */
+.hamburger {
+    display: none; /* Hide it on large screens */
+    font-size: 30px;
+    cursor: pointer;
+    padding: 10px;
+}
+/* Responsive Layout for Small Screens */
+@media (max-width: 767px) {
+    /* Show the hamburger menu on small screens */
+    .hamburger {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000; /* Ensure it's above the sidebar */
+    }
+
+    /* Adjust sidebar and content layout on small screens */
+    #sidebar {
+        width: 200px;
+        transform: translateX(-250px);  /* Start off-screen */
+    }
+
+    #sidebar.active {
+        transform: translateX(0);  /* Slide in when 'active' class is added */
+    }
+
+    #page-content-wrapper {
+        margin-left: 0; /* Take full width on small screens */
+    }
+
+    .col-md-8 {
+        width: 100%;  /* Full width on small screens */
+    }
+
+    .col-md-4 {
+        width: 100%;  /* Full width on small screens */
+    }
+}

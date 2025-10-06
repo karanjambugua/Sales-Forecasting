@@ -8,7 +8,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 
-app = Flask(__name__)
+
+# In app.py, configure the static folder explicitly
+app = Flask(__name__, static_folder='static', static_url_path='/static')
+
+# Ensure the path in user.html is correctly pointing to the static folder
+
 # The reasoning behind the outputs
 # Load the sales data
 data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
@@ -16,7 +21,7 @@ data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
 # Preprocess the data
 data['Date'] = pd.to_datetime(data['Date'])
 data.set_index('Date', inplace=True)
-monthly_data = data.resample('M').sum()
+monthly_data = data.resample('ME').sum()  # Use 'ME' for month-end frequency
 monthly_data['Month'] = monthly_data.index.month
 monthly_data['Year'] = monthly_data.index.year
 monthly_data['Prev_Sales'] = monthly_data['Amount'].shift(1)
@@ -243,28 +248,21 @@ def predict_dayweek():
     result = {
         'day_of_week': day_of_week,
         'include_weekend': include_weekend,
-        'forecast': f"Predicted sales for {day_of_week}: ${forecast_dayweek[0]:.2f} in sales.",
+        'forecast': f"Predicted sales for {day_of_week}: Ksh{forecast_dayweek[0]:.2f} in sales.",
         'recommendations': [
             "Consider offering promotions on weekends.",
             "Adjust stock levels based on predicted sales."
         ]
     }
 
-    return jsonify(result)
+    return  render_template('results.html', result=result)
 # Route for the homepage (index page)
 @app.route('/')
 def index():
     return render_template('index.html')
 
 # Route for the store manager page
-@app.route('/store-manager')
-def store_manager():
-    return render_template('store_manager.html')
 
-# Route for the procurement page
-@app.route('/procurement')
-def procurement():
-    return render_template('procurement.html')
 
 # Route for the executive page
 @app.route('/executive')
@@ -275,89 +273,47 @@ def executive():
 @app.route('/get-sales-forecast')
 def get_sales_forecast():
     try:
-        # Load your data from the data folder (replace with actual data path)
-        data = pd.read_csv('data/Thrift_Company_Sales.csv')  # Ensure file path is correct
-        if data.empty:
-            raise ValueError("CSV file is empty")
-        
-        # Ensure 'Date' and 'Sales' columns exist
-        if 'Date' not in data.columns or 'Sales' not in data.columns:
-            raise ValueError("Required columns (Date, Sales) are missing")
+        # Load the data from the uploaded CSV
+        data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
 
+        # Calculate industry sales, forecast accuracy, active alerts, and inventory turnover
+        # Here we're just doing some basic calculations as an example
+        industry_sales = data['Amount'].sum()
+        forecast_accuracy = 95  # Mock value, can be improved with actual calculation
+        active_alerts = 3  # Mock value, this can come from actual business rules
+        inventory_turnover = 4.0  # Mock value
+
+        # Group data by month for forecasting
         data['Date'] = pd.to_datetime(data['Date'])
-        data.set_index('Date', inplace=True)
+        data['Month'] = data['Date'].dt.strftime('%B')  # Get month names for x-axis
+        monthly_sales = data.groupby('Month')['Amount'].sum().sort_index()  # Group by month and sum sales
 
-        # Apply a simple forecasting model (Exponential Smoothing / Holt-Winters)
-        model = ExponentialSmoothing(data['Sales'], trend='add', seasonal='add', seasonal_periods=12)
-        fit = model.fit()
-
-        # Forecast the next 3 months
-        forecast_period = 3
-        forecast = fit.forecast(forecast_period)
-        
-        # Calculate industry metrics
-        industry_sales = data['Amount'].sum()  # Total sales
-        forecast_accuracy = 94.2  # Mock value, replace with actual calculation if available
-        active_alerts = 12  # Mock value
-        inventory_turnover = 8.5  # Mock value
-
-        # Preparing forecast data for frontend
-        forecast_data = {
-            'months': ['January', 'February', 'March'],
-            'sales': forecast.tolist(),
-            'industrySales': f"${industry_sales / 1e6:.2f}M",  # Format to millions
+        # Prepare data to send to the frontend
+        response_data = {
+            'months': monthly_sales.index.tolist(),
+            'sales': monthly_sales.values.tolist(),
+            'industrySales': f"Ksh{industry_sales / 1e9:.6f}B",  # Format to millions
             'forecastAccuracy': f"{forecast_accuracy}%",
             'activeAlerts': active_alerts,
             'inventoryTurnover': f"{inventory_turnover}x",
-            'bestSellingProducts': [
-                {'name': 'Winter Jacket', 'forecastedSales': 500},
-                {'name': 'Sneakers', 'forecastedSales': 300},
-                {'name': 'Vintage T-shirt', 'forecastedSales': 250}
-            ],
             'recommendations': [
-                "Restock Winter Jackets for December",
-                "Transfer sneakers to high-demand stores",
-                "Offer promotions for vintage T-shirts"
-            ]
+            {"text": "Restock Winter Jackets for December", "reason": "Winter jackets have been a high-demand product, particularly in the last quarter."},
+            {"text": "Transfer sneakers to high-demand stores", "reason": "Sneakers sales are concentrated in urban areas and need to be moved to stores with higher foot traffic."},
+            {"text": "Offer promotions for vintage T-shirts", "reason": "Vintage T-shirts have been a favorite among younger demographics. Offering discounts will increase sales."}
+        ]
+
         }
 
-        # Return forecast data as JSON
-        return jsonify(forecast_data)
-
+        return jsonify(response_data)
     except Exception as e:
-        # Log the exception and return error message
-        print(f"Error in getting sales forecast: {e}")
-        return jsonify({'error': str(e)}), 500
+        print(f"Error fetching sales forecast data: {e}")
+        return jsonify({'error': 'Failed to fetch forecast data'}), 500
 
 # Route to fetch store-specific sales forecast data (for frontend)
-@app.route('/get-store-sales-forecast')
-def get_store_sales_forecast():
-    # Mock data for store manager (this can be replaced with actual data fetching and processing)
-    store_forecast_data = {
-        'months': ['January', 'February', 'March'],
-        'sales': [5000, 5500, 6000],
-        'recommendations': [
-            "Restock Winter Jackets for high-demand areas",
-            "Promote Sneakers through discounts",
-            "Transfer Vintage T-shirts to new stores"
-        ]
-    }
-    return jsonify(store_forecast_data)
+
 
 # Route to fetch procurement-related data (for frontend)
-@app.route('/get-procurement-data')
-def get_procurement_data():
-    # Mock data for procurement (this can be replaced with actual data processing)
-    procurement_data = {
-        'categories': ['Clothing', 'Electronics', 'Accessories'],
-        'stockAndDemand': [3500, 2000, 1500],
-        'replenishmentSuggestions': [
-            "Order more Clothing for upcoming season",
-            "Electronics need timely restocking",
-            "Accessories should be reordered before the next sale"
-        ]
-    }
-    return jsonify(procurement_data)
+
 
 # Route to fetch executive-level sales data (for frontend)
 @app.route('/get-executive-sales-data')
@@ -368,9 +324,161 @@ def get_executive_sales_data():
         'sales': [75000, 80000, 78000, 85000, 90000, 92000]
     }
     return jsonify(executive_sales_data)
-# Route to user.html
+# Route to store manager page
+# Convert Date to datetime format
+# Strip leading/trailing spaces from column names and check them
 
-# Route for Day/Week/Weekend Forecasting form submission
+# Load the data
+data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
+
+# Convert Year, Month, and Day to integers and handle any invalid data
+data['Year'] = pd.to_numeric(data['Year'], errors='coerce')
+data['Month'] = pd.to_numeric(data['Month'], errors='coerce')
+data['Day'] = pd.to_numeric(data['Day'], errors='coerce')
+
+# Drop rows with invalid data
+data = data.dropna(subset=['Year', 'Month', 'Day'])
+
+# Create the 'Date' column
+data['Date'] = pd.to_datetime(data[['Year', 'Month', 'Day']].astype(str).agg('-'.join, axis=1), format='%Y-%m-%d', errors='coerce')
+
+# Store Manager Logic
+def calculate_store_manager_data():
+    # 1. Sales Overview
+    total_sales = data['Amount'].sum()
+    avg_sales = data['Amount'].mean()
+
+    # 2. Sales by Month
+    monthly_sales = data.groupby(data['Date'].dt.month)['Amount'].sum()
+
+    # 3. Best Performing Products (top 5 by total sales)
+    top_performing_products = data.groupby('Product/Service')['Amount'].sum().nlargest(5)
+
+    # 4. Underperforming Products (bottom 5 by total sales)
+    underperforming_products = data.groupby('Product/Service')['Amount'].sum().nsmallest(5)
+
+    # 5. Inventory Levels (total quantity for each product)
+    inventory_status = data.groupby('Product/Service')['Qty'].sum()
+
+    # 6. Restocking recommendations (mocked data)
+    restock_recommendations = [
+        {"product": "Winter Jacket", "reason": "High demand during winter months"},
+        {"product": "Sneakers", "reason": "Low stock and high sales demand in urban areas"},
+        {"product": "Vintage T-shirt", "reason": "Stock depletion due to popularity in the past month"}
+    ]
+    
+    # 7. Customer Feedback and Profitability (mocked data)
+    customer_feedback = {
+        "avg_rating": 4.5,
+        "common_complaints": ["Size issues", "Color mismatch", "Late delivery"]
+    }
+
+    # Profit margin (mocked data)
+    profit_margin = 0.25  # Placeholder for actual calculation
+
+    return {
+        'totalSales': f'KSh {total_sales:,.2f}',  # Format total sales in KSH
+        'avg_sales': f'KSh {avg_sales:,.2f}',  # Format average sales in KSH
+        'monthly_sales': monthly_sales.tolist(),
+        'top_performing_products': top_performing_products.to_dict(),
+        'underperforming_products': underperforming_products.to_dict(),
+        'inventory_status': inventory_status.to_dict(),
+        'restock_recommendations': restock_recommendations,
+        'customer_feedback': customer_feedback,
+        'profit_margin': profit_margin
+    }
+
+# Route for the store manager page
+@app.route('/store-manager')
+def store_manager():
+    # Fetch the store manager data
+    data = calculate_store_manager_data()
+    return render_template('store_manager.html', data=data)
+
+# API route to fetch data as JSON
+@app.route('/get-store-sales-forecast-v4')
+def get_store_sales_forecast_v4():
+    # Fetch and return the store manager data as JSON
+    data = calculate_store_manager_data()
+    return jsonify(data)
+# Procurement Logic
+def calculate_procurement_data():
+    # 1. Product Demand Forecast
+    categories = ['Category 1', 'Category 2', 'Category 3']  # Sample categories
+    stock_and_demand = [100, 200, 300]  # Sample stock vs demand data
+    replenishment_need = [50, 100, 150]  # Sample replenishment need data
+
+    # 2. Replenishment Suggestions (Mock data)
+    replenishment_suggestions = [
+        {"product": "Winter Jacket", "reason": "High demand during winter months"},
+        {"product": "Sneakers", "reason": "Low stock and high sales demand in urban areas"},
+        {"product": "Vintage T-shirt", "reason": "Stock depletion due to popularity in the past month"}
+    ]
+
+    # 3. Top Performing Products (Mock data)
+    top_performing_products = [
+        {"product": "Winter Jacket", "sales": 100000},
+        {"product": "Sneakers", "sales": 85000},
+        {"product": "Vintage T-shirt", "sales": 70000}
+    ]
+
+    # 4. Underperforming Products (Mock data)
+    underperforming_products = [
+        {"product": "Socks", "sales": 2000},
+        {"product": "Towels", "sales": 1500},
+        {"product": "Hats", "sales": 1200}
+    ]
+
+    return {
+        'categories': categories,
+        'stockAndDemand': stock_and_demand,
+        'replenishmentNeed': replenishment_need,
+        'replenishmentSuggestions': replenishment_suggestions,
+        'topPerformingProducts': top_performing_products,
+        'underperformingProducts': underperforming_products,
+        'procurementAlerts': ['Low stock on Winter Jackets', 'Sneakers high in demand']
+    }
+
+@app.route('/get-procurement-data')
+def get_procurement_data():
+    # Fetch and return the procurement data
+    data = calculate_procurement_data()
+    return jsonify(data)
+
+@app.route('/procurement')
+def procurement():
+    # Render the procurement dashboard page
+    return render_template('procurement_dashboard.html')
+
+
+# Route for getting store sales Forecasting form submission
+@app.route('/get-store-sales-forecast')
+def get_store_sales_forecast():
+    try:
+        # Load the data (assuming 'Thrift_Company_Sales_Clean.csv' contains the necessary data)
+        data = pd.read_csv('data/Thrift_Company_Sales_Clean.csv')
+        
+        # Calculate monthly sales for store-specific data (this assumes 'Store' column exists in your data)
+        store_data = data.groupby([data['Date'].dt.strftime('%B'), 'Store'])['Amount'].sum().reset_index()
+
+        # You can filter data for a specific store if needed (e.g., 'store_1')
+        store_name = "store_1"  # Adjust this based on user selection or input
+        store_sales = store_data[store_data['Store'] == store_name]
+
+        # Prepare data for the chart
+        months = store_sales['Date'].tolist()
+        sales = store_sales['Amount'].tolist()
+
+        # Return the data as JSON to the frontend
+        response_data = {
+            'months': months,
+            'sales': sales
+        }
+
+        return jsonify(response_data)
+    except Exception as e:
+        print(f"Error fetching store sales data: {e}")
+        return jsonify({'error': 'Failed to fetch store sales data'}), 500
 
 
 # Placeholder functions for running the forecast models

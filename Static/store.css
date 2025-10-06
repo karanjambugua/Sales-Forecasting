@@ -1,0 +1,233 @@
+/* Sidebar Styles */
+#sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    padding: 20px;
+    position: fixed;
+    width: 250px;
+}
+
+#sidebar h3 {
+    color: #fff;
+    text-align: center;
+}
+
+.nav-item {
+    padding: 10px 0;
+}
+
+.nav-link {
+    color: #fff;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: #007bff;
+}
+
+/* Main Content */
+#page-content-wrapper {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+    background-color: #f8f9fa;
+}
+
+.container-fluid {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Header */
+h1 {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card h5 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.card h3 {
+    font-size: 24px;
+}
+
+/* Individual Cards - Current Sales, Average Sales, etc. */
+.card.bg-primary, .card.bg-success, .card.bg-warning, .card.bg-info {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card.bg-primary {
+    background-color: #007bff;
+}
+
+.card.bg-success {
+    background-color: #28a745;
+}
+
+.card.bg-warning {
+    background-color: #ffc107;
+}
+
+.card.bg-info {
+    background-color: #17a2b8;
+}
+
+/* Sales Forecast Chart */
+#salesForecastChart {
+    width: 100% !important;
+    height: 300px !important; /* Ensure a fixed height for the chart */
+    max-width: 100%;
+    margin-top: 20px;
+}
+
+/* Recommendation Grid */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjusts for smaller screens */
+    gap: 20px;
+}
+
+.recommendation {
+    background-color: #f1f1f1;
+    padding: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.recommendation:hover {
+    background-color: #e2e2e2;
+}
+
+.recommendation .reason {
+    display: none;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.recommendation.open .reason {
+    display: block;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 767px) {
+    #sidebar {
+        width: 200px;
+    }
+
+    #page-content-wrapper {
+        margin-left: 0;
+    }
+
+    .card {
+        margin-bottom: 15px;
+    }
+
+    .card h3 {
+        font-size: 20px;
+    }
+
+    #salesForecastChart {
+        height: 250px;
+    }
+
+    .col-md-3 {
+        width: 100% !important;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 991px) {
+    .col-md-3 {
+        width: 48% !important;
+        margin-bottom: 20px;
+    }
+
+    .col-md-8 {
+        width: 100%;
+    }
+
+    #salesForecastChart {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    #salesForecastChart {
+        height: 250px;
+    }
+
+    .recommendation {
+        font-size: 14px;
+    }
+
+    .col-md-3 {
+        width: 100% !important;
+        margin-bottom: 20px;
+    }
+
+    .card h3 {
+        font-size: 18px;
+    }
+}
+/* Hamburger Menu */
+.hamburger {
+    display: none; /* Hide it on large screens */
+    font-size: 30px;
+    cursor: pointer;
+    padding: 10px;
+}
+/* Responsive Layout for Small Screens */
+@media (max-width: 767px) {
+    /* Show the hamburger menu on small screens */
+    .hamburger {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000; /* Ensure it's above the sidebar */
+    }
+
+    /* Adjust sidebar and content layout on small screens */
+    #sidebar {
+        width: 200px;
+        transform: translateX(-250px);  /* Start off-screen */
+    }
+
+    #sidebar.active {
+        transform: translateX(0);  /* Slide in when 'active' class is added */
+    }
+
+    #page-content-wrapper {
+        margin-left: 0; /* Take full width on small screens */
+    }
+
+    .col-md-8 {
+        width: 100%;  /* Full width on small screens */
+    }
+
+    .col-md-4 {
+        width: 100%;  /* Full width on small screens */
+    }
+}

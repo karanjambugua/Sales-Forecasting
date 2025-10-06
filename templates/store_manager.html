@@ -3,54 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Store Manager - Thrift Sales Forecast</title>
-
-    <!-- Bootstrap CSS -->
+    <title>Store Manager Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='store.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
 <body>
+     <div class="hamburger" id="hamburger">☰</div>
     <div class="d-flex" id="wrapper">
-        <!-- Sidebar -->
         <div class="bg-dark text-white p-4" id="sidebar">
             <h3>Thrift Forecast</h3>
             <ul class="nav flex-column">
-                                <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
-                 <li class="nav-item"><a class="nav-link text-white" href="/user">Get Prediction</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/user">Get Prediction</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/store-manager">Store Manager</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/procurement">Procurement</a></li>
                 <li class="nav-item"><a class="nav-link text-white" href="/executive">Executive</a></li>
             </ul>
         </div>
+        <div class="container-fluid" id="page-content-wrapper">
+            <h1 class="my-4 text-center">Store Manager Dashboard</h1>
 
-        <!-- Page Content Wrapper -->
-        <div id="page-content-wrapper" class="container-fluid">
-            <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="#">Store Manager Dashboard</a>
-            </nav>
-
-            <!-- Store Manager Dashboard Content -->
-            <div class="row mt-4">
-                <!-- Left Column: Product Demand Forecast Chart -->
-                <div class="col-md-8">
-                    <h4>Product Demand Forecast</h4>
-                    <canvas id="storeForecastChart"></canvas>
+            <!-- Sales Overview Cards -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5>Current Sales</h5>
+                            <h3 id="totalSales">Ksh {{ data.total_sales }}</h3>
+                        </div>
+                    </div>
                 </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5>Average Sales</h5>
+                            <h3 id="avgSales">Ksh {{ data.avg_sales }}</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Right Column: Restocking Recommendations -->
+            <!-- Monthly Sales Forecast -->
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <h4>Sales Forecast Overview</h4>
+                    <canvas id="salesForecastChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Performing Products -->
+            <div class="row mt-4">
                 <div class="col-md-4">
-                    <h4>Restocking Recommendations</h4>
-                    <ul id="restockingList">
-                        <!-- Recommendations will be populated dynamically here -->
+                    <h4>Top Performing Products</h4>
+                    <ul id="topPerformingProducts">
+                        <!-- Dynamic Content -->
                     </ul>
                 </div>
             </div>
+
+            <!-- Underperforming Products -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <h4>Underperforming Products</h4>
+                    <ul id="underperformingProducts">
+                        <!-- Dynamic Content -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Inventory Levels -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <h4>Inventory Levels</h4>
+                    <ul id="inventoryLevels">
+                        <!-- Dynamic Content -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Restocking Recommendations -->
+            <!-- Restocking Recommendations -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <h4>Restocking Recommendations</h4>
+        <div class="recommendations-grid" id="recommendationsList">
+            <!-- Dynamic Content -->
+        </div>
+    </div>
+</div>
+
+
+            <!-- Customer Feedback & Profitability -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <h4>Customer Feedback</h4>
+                    <p>Average Rating: {{ data.customer_feedback.avg_rating }}</p>
+                    <p>Common Complaints: 
+                        <ul>
+                            {% for complaint in data.customer_feedback.common_complaints %}
+                                <li>{{ complaint }}</li>
+                            {% endfor %}
+                        </ul>
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h4>Profit Margin</h4>
+                    <p>{{ data.profit_margin * 100 }}%</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- External JavaScript -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='store.js') }}"></script>
 </body>
 </html>
